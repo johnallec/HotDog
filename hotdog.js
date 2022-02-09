@@ -1,8 +1,9 @@
 const { Client, Intents } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const handler = require("./commandsHandler");
+require("dotenv").config();
 
-client.login("OTM5NTg1MTkwMzE2MTAxNjkz.Yf6-5g.hSz6c7IDGy3OT2zhKYdiKY0Z3Kw");
+client.login(process.env.HOTDOGTOKEN);
 
 client.on('ready',function(){
     console.log("Available");
