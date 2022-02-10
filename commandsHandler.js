@@ -3,12 +3,22 @@ const coinToss = require("./commands/coinToss");
 const clearHistory = require("./commands/clearHistory");
 
 function handleCommand(client,msg) {
-    switch(msg.content.replace("hot!dog ","").toLowerCase()){
+    switch(msg.content.replace("hd! ","").toLowerCase()){
         case 'print myid':
             msg.reply(msg.author.id);
             break;
         case 'savvy':
             msg.reply(savvy.getQuote());
+            break;
+        case 'savvyapi':
+            savvy.getQuoteAPI(msg,function(quote){
+                try{
+                    msg.reply(quote);
+                }
+                catch(err){
+                    msg.reply(err);
+                }
+            });
             break;
         case 'show commands':
             msg.channel.send('print myid\nsavvy\nclear history\ncoin toss');
@@ -24,5 +34,4 @@ function handleCommand(client,msg) {
             break;
     }
 }
-
 module.exports.handleCommand = handleCommand;
