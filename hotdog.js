@@ -14,7 +14,7 @@ client.on('ready',function(){
 client.on('message',function(msg){
     if(msg.author.bot)
         return;
-    if(msg.channel.id == '939587597670416394' && msg.content.startsWith("hd! ")){
+    if(msg.channel.id == '939587597670416394' && msg.content.startsWith("hd!")){
         handler.handleCommand(client,msg);
     }
     if(msg.author.id == '705457790688165929'){

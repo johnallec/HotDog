@@ -4,41 +4,39 @@ const clearHistory = require("./commands/clearHistory");
 const { request } = require("websocket");
 
 function handleCommand(client,msg) {
-    let request = msg.content.replace("hd! ","").toLowerCase();
-    let regex = new RegExp(/addquote\s"(.*)"/);
-    let result = regex.exec(request);
-    if(result!=null){
-        savvy.addQuoteAPI(msg,result[1],function(quote){
-            try{
-                msg.reply(quote);
+    let request = msg.content.replace("hd!","");
+    console.log(request);
+    //all the regex used into the switch
+    let regexAddQuote = /^addquote\s"(.*)"$/;
+    let regexGetQuoteAPI = /^savvy$/;
+    let regexGetThisQuote = /^savvy\s([0-9]+)$/;
+    let regexGetQuoteLocal = /^getquote$/;
+    let regexMyId = /^whoami$/;
+    let regexHelp = /^help$/;
+    let regexCoinToss = /^cointoss$/;
+    let regexClearHistory = /^clear$/;
+
+    //available commands
+    const allCommands = ['addquote "example"', 'savvy', 'savvy {integer}', 'getquote', 'whoami', 'help', 'cointoss', 'clear'];
+
+    switch(true) {
+
+        case regexAddQuote.test(request):
+
+            let regexResult = regexAddQuote.exec(request);
+            if(regexResult!=null){
+                savvy.addQuoteAPI(msg,result[1],function(quote){
+                    try{
+                        msg.reply(quote);
+                    }
+                    catch(err){
+                        msg.reply(err);
+                    }
+                });
             }
-            catch(err){
-                msg.reply(err);
-            }
-        });
-        return;
-    }
-    regex = new RegExp(/savvyapi\s([0-9]+)/);
-    result = regex.exec(request);
-    if(result!=null){
-        savvy.getThisQuoteAPI(msg,parseInt(result[1]),function(quote){
-            try{
-                msg.reply(quote);
-            }
-            catch(err){
-                msg.reply(err);
-            }
-        });
-        return;
-    }
-    switch(request){
-        case 'print myid':
-            msg.reply(msg.author.id);
             break;
-        case 'savvy':
-            msg.reply(savvy.getQuote());
-            break;
-        case 'savvyapi':
+
+        case regexGetQuoteAPI.test(request):
             savvy.getQuoteAPI(msg,function(quote){
                 try{
                     msg.reply(quote);
@@ -48,19 +46,55 @@ function handleCommand(client,msg) {
                 }
             });
             break;
-        case 'show commands':
-            msg.channel.send('print myid\nsavvy\nclear history\ncoin toss');
+
+        case regexGetThisQuote.test(request):
+            let result = regexGetThisQuote.exec(request);
+            if(result!=null){
+                savvy.getThisQuoteAPI(msg,parseInt(result[1]),function(quote){
+                    try{
+                        msg.reply(quote);
+                    }
+                    catch(err){
+                        msg.reply(err);
+                    }
+                });
+            }
             break;
-        case 'coin toss':
+        
+        case regexGetQuoteLocal.test(request):
+        
+            msg.reply(savvy.getQuote());
+            break;
+        
+        case regexMyId.test(request):
+
+            msg.reply(msg.author.id);
+            break;
+        
+        
+        case regexHelp.test(request):
+            let commands = "";
+            for(let i = 0; i < allCommands.length; ++i)
+                commands += allCommands[i]+'\n';
+            msg.reply(commands);
+            break;
+        
+        case regexCoinToss.test(request):
+
             msg.reply(coinToss.flip());
             break;
-        case 'clear history':
+        
+        case regexClearHistory.test(request):
+
             clearHistory.clear(client,msg);
             break;
+        
         default:
-            msg.reply("Type \'show commands\' to check all the commands available!");
+            msg.reply("Type \'help\' to check all the available commands!");
             break;
     }
     
 }
+
 module.exports.handleCommand = handleCommand;
+
